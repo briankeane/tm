@@ -1,15 +1,13 @@
 module TM
   class User
 
-    attr_reader :username, :password, :id
+    attr_reader :id, :username, :password
 
-    def initialize(attrs)  # username(string), password(string), id(integer)
+    def initialize (attrs) #id, username, password
+      @id = attrs[:id]
       @username = attrs[:username]
       @password = attrs[:password]
-      @id = attrs[:id]
     end
   end
-
-
-
 end
+

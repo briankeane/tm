@@ -7,6 +7,7 @@ module TM
       end
 
       def clear_everything
+        @user_id_counter = 200
         @artist_id_counter = 100
         @tour_id_counter = 500
         @transaction_id_counter = 800
@@ -17,6 +18,30 @@ module TM
         @transactions = {}
         @employees = {}
         @gigs = {}
+        @users = {}
+        @user_artist = {}
+      end
+
+      ##############
+      #   Users    #
+      ##############
+      def create_user(attrs)
+        id = (@user_id_counter += 1)
+        attrs[:id] = id
+        user = User.new(attrs)
+        @users[user.id] = user
+      end
+
+      def get_user(id)
+        @users[id]
+      end
+
+      def delete_user(id)
+        if (@users.delete(id) != nil)
+          return true
+        else
+          return false
+        end
       end
 
 
@@ -39,6 +64,19 @@ module TM
         return @artists.values
       end
 
+      def delete_artist(id)   # deletes an artist and all their tours
+        if (@artists.delete(id) == nil)
+          return false
+        else
+          tours_for_deletion = @tours.values.select { |t| t.artist_id == id }
+          tours_for_deletion.each { |t| self.delete_tour(tour.id) }
+          @employees.delete_if { |k, v| v.artist_id == id }
+
+        end
+        return true
+      end
+
+
       ###############
       #    Tours    #
       ###############
@@ -56,6 +94,16 @@ module TM
 
       def all_tours
         return @tours.values
+      end
+
+      def delete_tour(id)   #deletes a tour and all its transactions and gigs
+        if @tours.delete(id) == nil
+          return false
+        else
+          @transactions.delete_if { |k,v| v.tour_id == id }
+          @gigs.delete_if { |k,v| v.tour_id == id }
+        end
+        return true
       end
 
       ##################
@@ -78,6 +126,14 @@ module TM
         return @transactions.values.select { |t| t.tour_id == id }
       end
 
+      def delete_transaction(id)
+        if @transactions.delete(id) != nil
+          return true
+        else
+          return false
+        end
+      end
+
       ##################
       #    Employees   #
       ##################
@@ -96,6 +152,15 @@ module TM
       def all_employees
         @employees.values
       end
+
+      def delete_employee(id)
+        if @employees.delete(id) != nil
+          return true
+        else
+          return false
+        end
+      end
+
 
       ##################
       #      Gigs      #
@@ -116,6 +181,15 @@ module TM
       def get_gigs_by_tour(tour_id)
         @gigs.values.select{ |x| x.tour_id == tour_id }
       end
+
+      def delete_gig(id)
+        if @gigs.delete(id) != nil
+          return true
+        else
+          return false
+        end
+      end
+
     end
 
     def self.db

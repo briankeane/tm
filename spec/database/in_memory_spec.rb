@@ -8,6 +8,32 @@ module TM
 
     before { db.clear_everything }
 
+
+    ##############
+    #   Users    #
+    ##############
+    describe 'User' do
+      it 'creates a User' do
+        user = db.create_user ({ username: "Bob", password: "password" })
+        expect(user.username).to eq("Bob")
+        expect(user.password).to eq("password")
+        expect(user.id).to_not be_nil
+      end
+
+      it 'gets a User' do
+        user = db.create_user ({ username: "Bob", password: "password" })
+        expect(db.get_user(user.id).username).to eq("Bob")
+      end
+
+      it 'deletes a User' do
+        user = db.create_user ({ username: "Bob", password: "password" })
+        result = db.delete_user(user.id)
+        expect(db.delete_user(999999)).to eq(false)
+        expect(result).to eq(true)
+        expect(db.get_user(user.id)).to be_nil
+      end
+    end
+
     describe 'Artist' do
       it "creates a artist" do
         artist = db.create_artist ({ :name => 'Johnny', :manager_share => 0.15,
@@ -18,20 +44,37 @@ module TM
         expect(artist.booking_share).to eq(0.10)
       end
 
-      it "gets a user" do
+      it "gets an artist" do
         artist = db.create_artist ({ :name => 'Johnny', :manager_share => 0.15, :booking_share => 0.10 })
         retrieved_artist = db.get_artist(artist.id)
         expect(retrieved_artist.name).to eq('Johnny')
       end
 
-      it "gets all users" do
+      it "gets all artists" do
         artist = db.create_artist ({ :name => 'Johnny', :manager_share => 0.15, :booking_share => 0.10 })
         artist2 = db.create_artist ({ :name => 'Bob', :manager_share => 0.15, :booking_share => 0.10 })
         artist3 = db.create_artist ({ :name => 'Sue', :manager_share => 0.15, :booking_share => 0.10 })
         expect(db.all_artists.count).to eq(3)
         expect(db.all_artists.map &:name).to include('Johnny', 'Bob', 'Sue')
       end
+
+      it "deletes an artist" do
+        artist = db.create_artist ({ :name => 'Johnny', :manager_share => 0.15, :booking_share => 0.10 })
+        employee = db.create_employee ({ first_name: 'Bob', last_name: 'Dole', ssn: '249-23-1524', artist_id: artist.id })
+        expect(artist.name).to eq('Johnny')
+        result = db.delete_artist(artist.id)
+        result2 = db.delete_artist(99999)
+        expect(result).to eq(true)
+        expect(result2).to eq(false)
+        expect(db.get_artist(artist.id)).to be_nil
+        expect(db.get_employee(employee.id)).to be_nil
+      end
     end
+
+
+    ###############
+    #    Tours    #
+    ###############
 
     describe 'Tour' do
       it "creates a tour" do
@@ -57,7 +100,38 @@ module TM
         expect(db.all_tours.count).to eq(3)
         expect(db.all_tours.map &:start_date).to include(Date.new(2014, 4, 15), Date.new(2014, 5, 15), Date.new(2014, 6, 15))
       end
+
+      it "deletes a tour and all it's gigs and transactions" do
+        tour = db.create_tour({ start_date: Date.new(2014, 4, 15), end_date: Date.new(2014, 4,17) })
+        tour2 = db.create_tour({ start_date: Date.new(2014, 5, 15), end_date: Date.new(2014, 5,17) })
+        transaction = db.create_transaction({ amount: 55.25, source: "cc", description: "Tips",
+                                      date: Date.new(2014, 4, 15), tour_id: tour.id })
+        transaction2 = db.create_transaction({ amount: 65.25, source: "cash", description: "Bar Tab",
+                                      date: Date.new(2014, 4, 15), tour_id: tour.id })
+        transaction3 = db.create_transaction({ amount: 75.25, source: "checking", description: "Gas",
+                                      date: Date.new(2014, 4, 15), tour_id: tour.id })
+        transaction4 = db.create_transaction({ amount: 85.25, source: "cc", description: "Gas",
+                                      date: Date.new(2014, 4, 15), tour_id: tour2.id })
+        gig1 = db.create_gig({ venue: "Gruene Hall", city: "New Braunfels",
+                      market: "Also New Braunfels", cc_sales: 50,
+                      cash_sales: 100, deposit: 500, walk: 1000,
+                      tips: 0, tour_id: tour.id })
+        gig2 = db.create_gig({ venue: "The Firehouse", city: "New Braunfels",
+                      market: "Also New Braunfels", cc_sales: 50,
+                      cash_sales: 100, deposit: 500, walk: 1000,
+                      tips: 0, tour_id: tour2.id  })
+        result = db.delete_tour(tour.id)
+        expect(result).to eq(true)
+        expect(db.get_tour(tour.id)).to be_nil
+        expect(db.get_transactions_by_tour(tour.id).length).to eq(0)
+      end
+
     end
+
+
+    ##################
+    #  Transactions  #
+    ##################
 
     describe 'Transactions' do
       it "creates a transaction" do
@@ -95,17 +169,32 @@ module TM
         expect(db.get_transactions_by_tour(tour2.id).length).to eq(1)
         expect(db.get_transactions_by_tour(tour.id).map &:amount).to include(55.25, 65.25, 75.25)
       end
+
+      it "deletes a transaction" do
+        tour = db.create_tour({ start_date: Date.new(2014, 4, 15), end_date: Date.new(2014, 4,17) })
+        transaction = db.create_transaction({ amount: 55.25, source: "cc", description: "Tips",
+                                      date: Date.new(2014, 4, 15), tour_id: tour.id })
+        result = db.delete_transaction(transaction.id)
+        expect(result).to eq(true)
+        expect(db.get_transaction(transaction.id)).to be_nil
+      end
+
     end
 
+
+    ##################
+    #    Employees   #
+    ##################
     describe "Employee" do
       it "creates an employee" do
         employee = db.create_employee({ first_name: "Bob", last_name: "Dole",
-                                        ssn: "249-35-2213" })
+                                        ssn: "249-35-2213", artist_id: 1 })
         expect(employee).to be_a TM::Employee
         expect(employee.id).to_not be_nil
         expect(employee.ssn).to eq("249-35-2213")
         expect(employee.first_name).to eq("Bob")
         expect(employee.last_name).to eq("Dole")
+        expect(employee.artist_id).to eq(1)
       end
 
       it "gets an employee" do
@@ -124,8 +213,22 @@ module TM
         expect(db.all_employees.size).to eq(3)
         expect(db.all_employees.map &:first_name).to include("Bob", "Bill", "Cindy")
       end
+
+      it "deletes an employee" do
+        employee = db.create_employee({ first_name: "Bob", last_name: "Dole",
+                                        ssn: "888-35-2213" })
+        expect(db.get_employee(employee.id)).to_not be_nil
+        result = db.delete_employee(employee.id)
+        expect(result).to eq(true)
+        expect(db.get_employee(employee.id)).to be_nil
+      end
+
     end
 
+
+    ##################
+    #      Gigs      #
+    ##################
     describe "gig" do
       it "creates a gig" do
         tour = db.create_tour({ start_date: Date.new(2014, 4, 15), end_date: Date.new(2014, 4,17) })
@@ -187,6 +290,17 @@ module TM
         expect(db.get_gigs_by_tour(tour2.id).size).to eq(1)
       end
 
+      it "deletes a gig" do
+        tour = db.create_tour({ start_date: Date.new(2014, 4, 15), end_date: Date.new(2014, 4,17) })
+        gig1 = db.create_gig({ venue: "Gruene Hall", city: "New Braunfels",
+                      market: "Also New Braunfels", cc_sales: 50,
+                      cash_sales: 100, deposit: 500, walk: 1000,
+                      tips: 0, tour_id: tour.id })
+        expect(db.get_gig(gig1.id)).to_not be_nil
+        result = db.delete_gig(gig1.id)
+        expect(result).to eq(true)
+        expect(db.get_gig(gig1.id)).to be_nil
+      end
     end
   end
 end
