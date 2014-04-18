@@ -8,37 +8,40 @@ module TM
 
     before { db.clear_everything }
 
-    describe 'User' do
-      it "creates a user" do
-        user = db.create_user ({ :username => 'Johnny', :password => 'password' })
-        expect(user).to be_a TM::User
-        expect(user.username).to eq('Johnny')
-        expect(user.password).to eq('password')
-        expect(user.id).to_not be_nil
+    describe 'Artist' do
+      it "creates a artist" do
+        artist = db.create_artist ({ :name => 'Johnny', :manager_share => 0.15,
+                                  :booking_share => 0.10 })
+        expect(artist).to be_a TM::Artist
+        expect(artist.name).to eq('Johnny')
+        expect(artist.manager_share).to eq(0.15)
+        expect(artist.booking_share).to eq(0.10)
       end
 
       it "gets a user" do
-        user = db.create_user ({ :username => 'Johnny', :password => 'password' })
-        retrieved_user = db.get_user(user.id)
-        expect(retrieved_user.username).to eq('Johnny')
+        artist = db.create_artist ({ :name => 'Johnny', :manager_share => 0.15, :booking_share => 0.10 })
+        retrieved_artist = db.get_artist(artist.id)
+        expect(retrieved_artist.name).to eq('Johnny')
       end
 
       it "gets all users" do
-        user = db.create_user ({ :username => 'Johnny', :password => 'password' })
-        user2 = db.create_user ({ :username => 'Bob', :password => 'bobspassword' })
-        user3 = db.create_user ({ :username => 'Sue', :password => 'suespassword' })
-        expect(db.all_users.count).to eq(3)
-        expect(db.all_users.map &:username).to include('Johnny', 'Bob', 'Sue')
+        artist = db.create_artist ({ :name => 'Johnny', :manager_share => 0.15, :booking_share => 0.10 })
+        artist2 = db.create_artist ({ :name => 'Bob', :manager_share => 0.15, :booking_share => 0.10 })
+        artist3 = db.create_artist ({ :name => 'Sue', :manager_share => 0.15, :booking_share => 0.10 })
+        expect(db.all_artists.count).to eq(3)
+        expect(db.all_artists.map &:name).to include('Johnny', 'Bob', 'Sue')
       end
     end
 
     describe 'Tour' do
       it "creates a tour" do
-        tour = db.create_tour({ start_date: Date.new(2014, 4, 15), end_date: Date.new(2014, 4,17) })
+        artist = db.create_artist ({ :name => 'Johnny', :manager_share => 0.15, :booking_share => 0.10 })
+        tour = db.create_tour({ start_date: Date.new(2014, 4, 15), end_date: Date.new(2014, 4,17), artist_id: artist.id })
         expect(tour).to be_a TM::Tour
         expect(tour.start_date).to eq(Date.new(2014, 4, 15))
         expect(tour.end_date).to eq(Date.new(2014, 4,17))
         expect(tour.id).to_not be_nil
+        expect(tour.artist_id).to eq(artist.id)
       end
 
       it "gets a tour" do
@@ -130,7 +133,8 @@ module TM
         gig = db.create_gig({ venue: "Gruene Hall", city: "New Braunfels",
                               market: "Also New Braunfels", cc_sales: 50,
                               cash_sales: 100, deposit: 500, walk: 1000,
-                              tips: 0, type: "headliner", cover: 5, paid: 55, tour_id: tour.id })
+                              tips: 0, type: "headliner", cover: 5, paid: 55, tour_id: tour.id,
+                              other_bands: ["Randy Rogers Band", "Wade Bowen"] })
         expect(gig.id).to_not be_nil
         expect(gig).to be_a TM::Gig
         expect(gig.venue).to eq("Gruene Hall")
@@ -145,6 +149,7 @@ module TM
         expect(gig.cover).to eq(5)
         expect(gig.paid).to eq(55)
         expect(gig.tour_id).to eq(tour.id)
+        expect(gig.other_bands).to eq(["Randy Rogers Band", "Wade Bowen"])
       end
 
       it "gets a gig" do
@@ -181,15 +186,6 @@ module TM
         expect(db.get_gigs_by_tour(tour.id).map &:venue).to include("Gruene Hall", "The Firehouse", "Blue Light")
         expect(db.get_gigs_by_tour(tour2.id).size).to eq(1)
       end
-
-
-
-
-
-
-
-
-
 
     end
   end

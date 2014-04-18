@@ -7,12 +7,12 @@ module TM
       end
 
       def clear_everything
-        @user_id_counter = 100
+        @artist_id_counter = 100
         @tour_id_counter = 500
         @transaction_id_counter = 800
         @employee_id_counter = 10
         @gig_id_counter = 300
-        @users = {}
+        @artists = {}
         @tours = {}
         @transactions = {}
         @employees = {}
@@ -21,22 +21,22 @@ module TM
 
 
       ##############
-      #   Users    #
+      #   Artists  #
       ##############
 
-      def create_user(attrs)
-        id = (@user_id_counter += 1)
+      def create_artist(attrs)
+        id = (@artist_id_counter += 1)
         attrs[:id] = id
-        new_user = User.new(attrs)
-        @users[new_user.id] = new_user
+        artist = Artist.new(attrs)
+        @artists[artist.id] = artist
       end
 
-      def get_user(id)
-        return @users[id]
+      def get_artist(id)
+        return @artists[id]
       end
 
-      def all_users
-        return @users.values
+      def all_artists
+        return @artists.values
       end
 
       ###############
@@ -101,7 +101,7 @@ module TM
       #      Gigs      #
       ##################
       def create_gig(attrs) # venue, city, market, cc_sales, cash_sales
-                            # deposit, walk, tips, cover, paid, type
+                            # deposit, walk, tips, cover, paid, type, other_bands
         id = (@gig_id_counter += 1)
         attrs[:id] = id
         gig = Gig.new(attrs)
@@ -116,13 +116,11 @@ module TM
       def get_gigs_by_tour(tour_id)
         @gigs.values.select{ |x| x.tour_id == tour_id }
       end
-
-
-
-
-
-
-
     end
+
+    def self.db
+      @__db_instance ||= InMemory.new
+    end
+
   end
 end

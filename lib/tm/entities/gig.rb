@@ -2,7 +2,7 @@ module TM
   class Gig
 
     attr_reader :venue, :city, :market, :cc_sales, :cash_sales, :tour_id
-    attr_reader :deposit, :walk, :tips, :id, :type, :cover, :paid
+    attr_reader :deposit, :walk, :tips, :id, :type, :cover, :paid, :other_bands
 
     def initialize(attrs)
       @venue = attrs[:venue]
@@ -18,6 +18,7 @@ module TM
       @cover = attrs[:cover]
       @paid = attrs[:paid]
       @tour_id = attrs[:tour_id]
+      @other_bands = attrs[:other_bands]
     end
 
     def total_merch

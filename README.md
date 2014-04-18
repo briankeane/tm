@@ -1,7 +1,7 @@
 User Stories
 
 As a user, I want to be able to:
-  - Store, sort, and retrieve all expeneses
+  - Store, sort, and retrieve all expenses
   - Calculate the amount for deposit after tour
   - Determine the gross and net for each tour
   - Store and retrieve attendance for each market in order by date

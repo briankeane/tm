@@ -32,12 +32,7 @@ module TM
                         cash_sales: 100, deposit: 500, walk: 1000,
                         tips: 0, paid: 150, tour_id: 1 })
     expect(gig1.merch_per_attendee).to eq(1)
-
-
     end
-
-
-
 
   end
 end
