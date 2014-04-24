@@ -254,6 +254,27 @@ module TM
         end
       end
 
+      def get_gigs_by_market(attrs)  # market, artist_id
+        gigs = @gigs.values.select{ |gig| (gig.market == attrs[:market]) && (self.get_tour(gig.tour_id).artist_id == attrs[:artist_id]) }.sort_by { |gig| gig.date }
+      end
+
+      def edit_gig(attrs)
+        gig = self.get_gig(attrs[:gig_id])
+        if attrs[:venue]          then    gig.venue = attrs[:venue]               end
+        if attrs[:city]           then    gig.city = attrs[:city]                 end
+        if attrs[:market]         then    gig.market = attrs[:market]             end
+        if attrs[:cc_sales]       then    gig.cc_sales = attrs[:cc_sales]         end
+        if attrs[:cash_sales]     then    gig.cash_sales = attrs[:cash_sales]     end
+        if attrs[:deposit]        then    gig.deposit = attrs[:deposit]           end
+        if attrs[:walk]           then    gig.walk = attrs[:walk]                 end
+        if attrs[:tips]           then    gig.tips = attrs[:tips]                 end
+        if attrs[:type]           then    gig.type = attrs[:type]                 end
+        if attrs[:cover]          then    gig.cover = attrs[:cover]               end
+        if attrs[:paid]           then    gig.paid = attrs[:paid]                 end
+        if attrs[:tour_id]        then    gig.tour_id = attrs[:tour_id]           end
+        if attrs[:other_bands]    then    gig.other_bands = attrs[:other_bands]   end
+        gig
+      end
     end
 
     def self.db

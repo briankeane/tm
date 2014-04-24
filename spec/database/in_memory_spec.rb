@@ -8,7 +8,6 @@ module TM
 
     before { db.clear_everything }
 
-
     ##############
     #   Users    #
     ##############
@@ -372,6 +371,59 @@ module TM
         result = db.delete_gig(gig1.id)
         expect(result).to eq(true)
         expect(db.get_gig(gig1.id)).to be_nil
+      end
+
+      it "gets gigs by market" do
+        artist = db.create_artist({ name: 'Bob' })
+        tour = db.create_tour({ start_date: Date.new(2012, 4, 15), end_date: Date.new(2012, 4,17), artist_id: artist.id })
+        tour2 = db.create_tour({ start_date: Date.new(2013, 5, 15), end_date: Date.new(2013, 5,17), artist_id: artist.id })
+        tour3 = db.create_tour({ start_date: Date.new(2014, 4, 15), end_date: Date.new(2014, 4,17), artist_id: artist.id })
+        tour4 = db.create_tour({ start_date: Date.new(2015, 4, 15), end_date: Date.new(2015, 4,17), artist_id: artist.id })
+
+        gig1 = db.create_gig({ venue: "Gruene Hall", city: "New Braunfels",
+                      market: "New Braunfels", cc_sales: 50,
+                      cash_sales: 100, deposit: 500, walk: 1000,
+                      tips: 0, tour_id: tour.id, date: Date.new(2012, 4,16) })
+        gig2 = db.create_gig({ venue: "The Firehouse", city: "New Braunfels",
+                      market: "New Braunfels", cc_sales: 50,
+                      cash_sales: 100, deposit: 500, walk: 1000,
+                      tips: 0, tour_id: tour2.id, date: Date.new(2013, 4,16) })
+        gig3 = db.create_gig({ venue: "Blue Light", city: "New Braunfels",
+                      market: "Lubbock", cc_sales: 50,
+                      cash_sales: 100, deposit: 500, walk: 1000,
+                      tips: 0, tour_id: tour3.id, date: Date.new(2014, 4,16) })
+        gig4 = db.create_gig({ venue: "Gruene Hall", city: "New Braunfels",
+                      market: "New Braunfels", cc_sales: 50,
+                      cash_sales: 100, deposit: 500, walk: 1000,
+                      tips: 0, tour_id: tour4.id, date: Date.new(2015, 4,16)  })
+        gigs_by_market = db.get_gigs_by_market({ market: "New Braunfels", artist_id: artist.id })
+        expect(gigs_by_market.size).to eq(3)
+        expect(gigs_by_market[0].id).to eq(gig1.id)
+        expect(gigs_by_market[2].id).to eq(gig4.id)
+      end
+
+      it "edits a gig" do
+        gig = db.create_gig({ venue: "Gruene Hall", city: "New Braunfels",
+                              market: "Also New Braunfels", cc_sales: 50,
+                              cash_sales: 100, deposit: 500, walk: 1000,
+                              tips: 0, type: "headliner", cover: 5, paid: 55, tour_id: 5,
+                              other_bands: ["Randy Rogers Band", "Wade Bowen"] })
+        db.edit_gig({ gig_id: gig.id, venue: "Blue Light", city: "Lubbock",
+                                cc_sales: 100.00, cash_sales: 1000.00 })
+        expect(gig.venue).to eq("Blue Light")
+        expect(gig.city).to eq("Lubbock")
+        expect(gig.cc_sales).to eq(100.00)
+        expect(gig.cash_sales).to eq(1000.00)
+        db.edit_gig({ gig_id: gig.id, deposit: 0, walk: 250, tips: 100, type: "support",
+                                cover: 10, paid: 1150, tour_id: 8, other_bands: "Cody Johnson" })
+        expect(gig.deposit).to eq(0)
+        expect(gig.walk).to eq(250)
+        expect(gig.tips).to eq(100)
+        expect(gig.type).to eq("support")
+        expect(gig.cover).to eq(10)
+        expect(gig.paid).to eq(1150)
+        expect(gig.tour_id).to eq(8)
+        expect(gig.other_bands).to eq("Cody Johnson")
       end
     end
   end

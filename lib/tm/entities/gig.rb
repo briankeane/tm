@@ -1,8 +1,9 @@
 module TM
   class Gig
 
-    attr_reader :venue, :city, :market, :cc_sales, :cash_sales, :tour_id
-    attr_reader :deposit, :walk, :tips, :id, :type, :cover, :paid, :other_bands
+    attr_accessor :venue, :city, :market, :cc_sales, :cash_sales, :tour_id, :date
+    attr_accessor :deposit, :walk, :tips, :type, :cover, :paid, :other_bands
+    attr_reader :id
 
     def initialize(attrs)
       @venue = attrs[:venue]
