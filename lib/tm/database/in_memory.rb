@@ -49,9 +49,6 @@ module TM
         end
       end
 
-      def assign_user_artist_relationship(user_id, artist_id)
-        @user_artist << [user_id, artist_id]
-      end
 
 
       ##############
@@ -101,6 +98,14 @@ module TM
         if attrs[:manager_share]  then  artist.manager_share = attrs[:manager_share]    end
         if attrs[:booking_share]  then  artist.booking_share = attrs[:booking_share]    end
         artist
+      end
+
+      #########################
+      #   User/Artist Join    #
+      #########################
+
+      def assign_user_artist_relationship(user_id, artist_id)
+        @user_artist << [user_id, artist_id]
       end
 
 
@@ -174,6 +179,15 @@ module TM
         end
       end
 
+      def edit_transaction(attrs)
+        transaction = self.get_transaction(attrs[:transaction_id])
+        if attrs[:amount]         then    transaction.amount = attrs[:amount]           end
+        if attrs[:source]         then    transaction.source = attrs[:source]           end
+        if attrs[:description]    then    transaction.description = attrs[:description] end
+        if attrs[:date]           then    transaction.date = attrs[:date]               end
+        transaction
+      end
+
       ##################
       #    Employees   #
       ##################
@@ -203,10 +217,10 @@ module TM
 
       def edit_employee(attrs)
         employee = self.get_employee(attrs[:employee_id])
-        if attrs[:first_name]     then  employee.first_name = attrs[:first_name]          end
-        if attrs[:last_name]      then  employee.last_name = attrs[:last_name]    end
-        if attrs[:ssn]            then  employee.ssn = attrs[:ssn]    end
-        if attrs[:artist_id]      then  employee.artist_id = attrs[:artist_id]            end
+        if attrs[:first_name]     then  employee.first_name = attrs[:first_name]      end
+        if attrs[:last_name]      then  employee.last_name = attrs[:last_name]        end
+        if attrs[:ssn]            then  employee.ssn = attrs[:ssn]                    end
+        if attrs[:artist_id]      then  employee.artist_id = attrs[:artist_id]        end
         employee
       end
 

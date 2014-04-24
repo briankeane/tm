@@ -84,6 +84,9 @@ module TM
         expect(artist.booking_share).to eq(0.80)
       end
 
+      #########################
+      #   User/Artist Join    #
+      #########################
 
       it "establishes a user/artist relationship and gets all artists per user" do
         user = db.create_user ({ username: "Bob", password: "password" })
@@ -220,6 +223,21 @@ module TM
         result = db.delete_transaction(transaction.id)
         expect(result).to eq(true)
         expect(db.get_transaction(transaction.id)).to be_nil
+      end
+
+      it "edits a transaction" do
+        tour = db.create_tour({ start_date: Date.new(2014, 4, 15), end_date: Date.new(2014, 4,17) })
+        transaction = db.create_transaction({ amount: 55.25, source: "cc", description: "Tips",
+                                      date: Date.new(2014, 4, 15), tour_id: tour.id })
+
+        db.edit_transaction({ transaction_id: transaction.id, amount: 105.55 })
+
+        expect(transaction.amount).to eq(105.55)
+        db.edit_transaction({ transaction_id: transaction.id, source: "checking" })
+        expect(transaction.amount).to eq(105.55)
+        db.edit_transaction({ transaction_id: transaction.id, description: "OTHER", date: Date.new(2014,4,17) })
+        expect(transaction.description).to eq("OTHER")
+        expect(transaction.date).to eq(Date.new(2014, 4,17))
       end
     end
 

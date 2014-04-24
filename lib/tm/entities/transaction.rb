@@ -1,7 +1,8 @@
 module TM
   class Transaction
 
-    attr_reader :amount, :source, :description, :date, :id, :tour_id
+    attr_accessor :amount, :source, :description, :date, :tour_id
+    attr_reader :id
 
     def initialize(attrs)  #amount, #source, #description, #date, #id
       @amount = attrs[:amount]
@@ -13,4 +14,3 @@ module TM
     end
   end
 end
-

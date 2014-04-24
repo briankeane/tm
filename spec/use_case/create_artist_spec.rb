@@ -16,6 +16,5 @@ module TM
       expect(result.success?).to eq(true)
       expect(result.artist.id).to_not be_nil
     end
-
   end
 end
