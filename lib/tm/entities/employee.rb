@@ -1,7 +1,8 @@
 module TM
   class Employee
 
-    attr_reader :id, :first_name, :last_name, :ssn, :artist_id
+    attr_reader :id
+    attr_accessor :first_name, :last_name, :ssn, :artist_id
 
     def initialize(attrs) #id, first_name, last_name, ssn, artist_id
       @id = attrs[:id]

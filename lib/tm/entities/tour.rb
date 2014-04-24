@@ -1,7 +1,8 @@
 module TM
   class Tour
 
-    attr_reader :start_date, :end_date, :id, :artist_id
+    attr_reader :id
+    attr_accessor :start_date, :end_date, :id, :artist_id
 
     def initialize(attrs)  #start_date, @end_date, #id
       @id = attrs[:id]

@@ -1,5 +1,10 @@
 module TM
   module Database
+
+    def self.db
+      @@db != InMemory.new
+    end
+
     class InMemory
 
       def initialize(config=nil)
@@ -19,7 +24,7 @@ module TM
         @employees = {}
         @gigs = {}
         @users = {}
-        @user_artist = {}
+        @user_artist = []
       end
 
       ##############
@@ -42,6 +47,10 @@ module TM
         else
           return false
         end
+      end
+
+      def assign_user_artist_relationship(user_id, artist_id)
+        @user_artist << [user_id, artist_id]
       end
 
 
@@ -76,6 +85,24 @@ module TM
         return true
       end
 
+      def get_artists_by_user(user_id)
+        results = []
+        @user_artist.each do |x|
+          if x[0] == user_id
+            results << self.get_artist(x[1])
+          end
+        end
+        return results
+      end
+
+      def edit_artist(attrs)
+        artist = self.get_artist(attrs[:artist_id])
+        if attrs[:name]           then  artist.name = attrs[:name]                      end
+        if attrs[:manager_share]  then  artist.manager_share = attrs[:manager_share]    end
+        if attrs[:booking_share]  then  artist.booking_share = attrs[:booking_share]    end
+        artist
+      end
+
 
       ###############
       #    Tours    #
@@ -105,6 +132,19 @@ module TM
         end
         return true
       end
+
+      def get_tours_by_artist(artist_id)
+        return @tours.values.select { |v| v.artist_id == artist_id }.sort_by { |x| x.start_date }
+      end
+
+      def edit_tour(attrs)
+        tour = self.get_tour(attrs[:tour_id])
+        if attrs[:start_date]       then  tour.start_date = attrs[:start_date]    end
+        if attrs[:end_date]         then  tour.end_date = attrs[:end_date]        end
+        if attrs[:artist_id]        then  tour.artist_id = attrs[:artist_id]    end
+        tour
+      end
+
 
       ##################
       #  Transactions  #
@@ -137,7 +177,7 @@ module TM
       ##################
       #    Employees   #
       ##################
-      def create_employee(attrs)
+      def create_employee(attrs)   #first_name, last_name, ssn, artist_id
         id = (@employee_id_counter += 1)
         attrs[:id] = id
         new_employee = Employee.new(attrs)
@@ -160,6 +200,16 @@ module TM
           return false
         end
       end
+
+      def edit_employee(attrs)
+        employee = self.get_employee(attrs[:employee_id])
+        if attrs[:first_name]     then  employee.first_name = attrs[:first_name]          end
+        if attrs[:last_name]      then  employee.last_name = attrs[:last_name]    end
+        if attrs[:ssn]            then  employee.ssn = attrs[:ssn]    end
+        if attrs[:artist_id]      then  employee.artist_id = attrs[:artist_id]            end
+        employee
+      end
+
 
 
       ##################

@@ -34,10 +34,14 @@ module TM
       end
     end
 
+
+    ##############
+    #   Artists  #
+    ##############
+
     describe 'Artist' do
-      it "creates a artist" do
-        artist = db.create_artist ({ :name => 'Johnny', :manager_share => 0.15,
-                                  :booking_share => 0.10 })
+      it "creates an artist" do
+        artist = db.create_artist ({ :name => 'Johnny', :manager_share => 0.15, :booking_share => 0.10 })
         expect(artist).to be_a TM::Artist
         expect(artist.name).to eq('Johnny')
         expect(artist.manager_share).to eq(0.15)
@@ -68,6 +72,25 @@ module TM
         expect(result2).to eq(false)
         expect(db.get_artist(artist.id)).to be_nil
         expect(db.get_employee(employee.id)).to be_nil
+      end
+
+      it "edits an artist" do
+        artist = db.create_artist ({ :name => 'Johnny', :manager_share => 0.15, :booking_share => 0.10 })
+        db.edit_artist({ artist_id: artist.id, name: 'Bobby' })
+        expect(artist.name).to eq('Bobby')
+        db.edit_artist({ artist_id: artist.id, manager_share: 0.95 })
+        expect(artist.manager_share).to eq(0.95)
+        db.edit_artist({ artist_id: artist.id, :booking_share => 0.80 })
+        expect(artist.booking_share).to eq(0.80)
+      end
+
+
+      it "establishes a user/artist relationship and gets all artists per user" do
+        user = db.create_user ({ username: "Bob", password: "password" })
+        artist = db.create_artist ({ :name => 'Johnny', :manager_share => 0.15, :booking_share => 0.10 })
+        db.assign_user_artist_relationship(user.id, artist.id)
+        expect(db.get_artists_by_user(user.id).size).to eq(1)
+        expect(db.get_artists_by_user(user.id)[0].id).to eq(artist.id)
       end
     end
 
@@ -126,6 +149,26 @@ module TM
         expect(db.get_transactions_by_tour(tour.id).length).to eq(0)
       end
 
+      it "gets all tours for an artist" do
+        artist = db.create_artist ({ :name => 'Johnny', :manager_share => 0.15, :booking_share => 0.10 })
+        tour = db.create_tour({ start_date: Date.new(2014, 4, 15), end_date: Date.new(2014, 4,17), artist_id: artist.id })
+        tour2 = db.create_tour({ start_date: Date.new(2014, 5, 15), end_date: Date.new(2014, 5,17), artist_id: artist.id })
+        tour3 = db.create_tour({ start_date: Date.new(2014, 6, 15), end_date: Date.new(2014, 6,17), artist_id: artist.id })
+        tour4 = db.create_tour({ start_date: Date.new(2014, 6, 16), end_date: Date.new(2014, 6,18), artist_id: (artist.id + 5) })
+        tours = db.get_tours_by_artist(artist.id)
+        expect(tours.size).to eq(3)
+        expect(tours[0].start_date).to eq(Date.new(2014, 4, 15))
+        expect(tours[2].start_date).to eq(Date.new(2014, 6, 15))
+      end
+
+      it "edits a tour" do
+        artist = db.create_artist ({ :name => 'Johnny', :manager_share => 0.15, :booking_share => 0.10 })
+        tour = db.create_tour({ start_date: Date.new(2014, 4, 15), end_date: Date.new(2014, 4,17), artist_id: artist.id })
+        db.edit_tour({ tour_id: tour.id, start_date: Date.new(2012, 12, 12)})
+        expect(tour.start_date).to eq(Date.new(2012, 12, 12))
+        db.edit_tour({ tour_id: tour.id, end_date: Date.new(2014, 1,1 ) })
+        expect(tour.end_date).to eq(Date.new(2014, 1, 1))
+      end
     end
 
 
@@ -178,7 +221,6 @@ module TM
         expect(result).to eq(true)
         expect(db.get_transaction(transaction.id)).to be_nil
       end
-
     end
 
 
@@ -223,6 +265,18 @@ module TM
         expect(db.get_employee(employee.id)).to be_nil
       end
 
+      it "edits an employee's info" do
+        employee = db.create_employee({ first_name: "Bob", last_name: "Dole",
+                                        ssn: "888-35-2213", artist_id: 5 })
+        db.edit_employee({ employee_id: employee.id, first_name: 'Sue' })
+        expect(employee.first_name).to eq("Sue")
+        db.edit_employee({ employee_id: employee.id , last_name: 'Suskin' })
+        expect(employee.last_name).to eq('Suskin')
+        db.edit_employee({ employee_id: employee.id, ssn: "555-55-5555" })
+        expect(employee.ssn).to eq("555-55-5555")
+        db.edit_employee({ employee_id: employee.id, artist_id: 6 })
+        expect(employee.artist_id).to eq(6)
+      end
     end
 
 
