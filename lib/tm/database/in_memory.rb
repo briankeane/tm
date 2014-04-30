@@ -12,6 +12,7 @@ module TM
       end
 
       def clear_everything
+        @session_id_count = 350
         @user_id_counter = 200
         @artist_id_counter = 100
         @tour_id_counter = 500
@@ -25,6 +26,7 @@ module TM
         @gigs = {}
         @users = {}
         @user_artist = []
+        @sessions = {}
       end
 
       ##############
@@ -49,6 +51,28 @@ module TM
         end
       end
 
+      ##############
+      #  Sessions  #
+      ##############
+
+      def create_session(user_id)
+        session_id = (@session_id_count += 1)
+        @sessions[session_id] = user_id
+        return session_id
+      end
+
+      def get_uid_from_sid(session_id)
+        @sessions[session_id]
+      end
+
+      def delete_session(session_id)
+        if @sessions[session_id]
+          @sessions.delete(session_id)
+          return true
+        else
+          return false
+        end
+      end
 
 
       ##############
@@ -85,8 +109,8 @@ module TM
       def get_artists_by_user(user_id)
         results = []
         @user_artist.each do |x|
-          if x[0] == user_id
-            results << self.get_artist(x[1])
+          if x[:user_id] == user_id
+            results << self.get_artist(x[:artist_id])
           end
         end
         return results
@@ -104,8 +128,8 @@ module TM
       #   User/Artist Join    #
       #########################
 
-      def assign_user_artist_relationship(user_id, artist_id)
-        @user_artist << [user_id, artist_id]
+      def assign_user_artist_relationship(attrs)
+        @user_artist << { user_id: attrs[:user_id], artist_id: attrs[:artist_id] }
       end
 
 

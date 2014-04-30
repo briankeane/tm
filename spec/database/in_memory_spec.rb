@@ -35,6 +35,27 @@ module TM
 
 
     ##############
+    #  Sessions  #
+    ##############
+    describe 'Session' do
+      it 'creates a Session' do
+        session_id = db.create_session(5)
+        user_id = db.get_uid_from_sid(session_id)
+        expect(user_id).to eq(5)
+        expect(db.get_uid_from_sid(25)).to be_nil
+      end
+
+
+      it 'deletes a session' do
+        session_id = db.create_session(5)
+        expect(db.get_uid_from_sid(session_id)).to eq(5)
+        db.delete_session(session_id)
+        expect(db.get_uid_from_sid(session_id)).to be_nil
+      end
+
+    end
+
+    ##############
     #   Artists  #
     ##############
 
@@ -90,7 +111,7 @@ module TM
       it "establishes a user/artist relationship and gets all artists per user" do
         user = db.create_user ({ username: "Bob", password: "password" })
         artist = db.create_artist ({ :name => 'Johnny', :manager_share => 0.15, :booking_share => 0.10 })
-        db.assign_user_artist_relationship(user.id, artist.id)
+        db.assign_user_artist_relationship({ user_id: user.id, artist_id: artist.id })
         expect(db.get_artists_by_user(user.id).size).to eq(1)
         expect(db.get_artists_by_user(user.id)[0].id).to eq(artist.id)
       end
