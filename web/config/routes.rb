@@ -1,6 +1,7 @@
 Web::Application.routes.draw do
+  get "users/new"
   root :to => 'opening_pages#welcome'
-  get "opening_pages/about"
-  get "opening_pages/sign_in"
-  get "opening_pages/sign_up"
+  match '/about',      to: 'opening_pages#about',    via: 'get'
+  match '/signin',    to: 'opening_pages#sign_in',  via: 'get'
+  match '/signup',    to: 'users#new',               via: 'get'
 end
