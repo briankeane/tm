@@ -4,4 +4,5 @@ Web::Application.routes.draw do
   match '/signin',   to:   'opening_pages#sign_in',  via: 'get'
   match '/signup',   to:   'users#new',              via: 'get'
   match '/signout',  to:   'users#signout',          via: 'get'
+  match '/signup',   to:   'users#create',           via: 'post'
 end

@@ -8,7 +8,8 @@ class ApplicationController < ActionController::Base
   end
 
   def signed_in?
-    session[:session_id] != nil
+    #session[:session_id] != nil
+    false
   end
 
   protect_from_forgery with: :exception

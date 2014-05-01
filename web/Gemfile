@@ -1,7 +1,10 @@
 source 'https://rubygems.org'
 
+require '../lib/tm.rb'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.0.4'
+
+require 'pry-debugger'
 
 
 # Use SCSS for stylesheets
@@ -31,6 +34,10 @@ group :doc do
   # bundle exec rake doc:rails generates the API under doc/api.
   gem 'sdoc', require: false
 end
+
+# include Gemfile
+app_gemfile_path = File.expand_path('../../Gemfile', __FILE__)
+eval File.read(app_gemfile_path)
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'

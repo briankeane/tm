@@ -35,7 +35,7 @@ module TM
       ##############
       #   Users    #
       ##############
-      def create_user(attrs)
+      def create_user(attrs)  # username, password
         id = (@user_id_counter += 1)
         attrs[:id] = id
         user = User.new(attrs)
@@ -108,7 +108,6 @@ module TM
           tours_for_deletion = @tours.values.select { |t| t.artist_id == id }
           tours_for_deletion.each { |t| self.delete_tour(tour.id) }
           @employees.delete_if { |k, v| v.artist_id == id }
-
         end
         return true
       end
