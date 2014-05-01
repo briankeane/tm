@@ -4,8 +4,6 @@ require '../lib/tm.rb'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.0.4'
 
-require 'pry-debugger'
-
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.2'
@@ -50,5 +48,3 @@ eval File.read(app_gemfile_path)
 
 # Use debugger
 # gem 'debugger', group: [:development, :test]
-
-

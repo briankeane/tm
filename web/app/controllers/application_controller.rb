@@ -4,12 +4,11 @@ class ApplicationController < ActionController::Base
   helper_method :current_user, :signed_in?
 
   def current_user
-    TM::Database.db.get_user(session(:session_id))
+    TM::Database.db.get_user(session(:tm_session_id))
   end
 
   def signed_in?
-    #session[:session_id] != nil
-    false
+    session[:tm_session_id] != nil
   end
 
   protect_from_forgery with: :exception

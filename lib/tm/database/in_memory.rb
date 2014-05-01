@@ -1,5 +1,4 @@
 require 'securerandom'
-require 'pry-debugger'
 
 module TM
   module Database

@@ -6,7 +6,7 @@ module TM
       when user != nil
         return failure(:username_taken)
       else
-        user = TM::Database.db.(user.id)
+        user = TM::Database.db.create_user({ username: attrs[:username], password: attrs[:password] })
         return success :user => user
       end
     end
