@@ -147,6 +147,7 @@ module TM
         attrs[:id] = id
         new_tour = Tour.new(attrs)
         @tours[new_tour.id] = new_tour
+        new_tour
       end
 
       def get_tour(id)

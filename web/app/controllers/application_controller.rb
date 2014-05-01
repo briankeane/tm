@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
   helper_method :current_user, :signed_in?
 
   def current_user
-    TM::Database.db.get_user(session(:tm_session_id))
+    TM::Database.db.get_user(TM::Database.db.get_uid_from_sid(session[:tm_session_id]))
   end
 
   def signed_in?

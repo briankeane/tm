@@ -1,0 +1,7 @@
+<h1>Select an Artist</h1>
+<div class="center hero-unit">
+  <% @artists.each do |artist| %>
+    <h2><a href="#"><%= artist.name %> </h2></a></br>
+  <% end %>
+  <%= link_to "Add Artist", '#', class: "btn btn-large btn-primary" %>
+</div>
