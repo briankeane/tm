@@ -1,3 +1,6 @@
+require 'securerandom'
+require 'pry-debugger'
+
 module TM
   module Database
 
@@ -51,12 +54,16 @@ module TM
         end
       end
 
+      def get_user_by_username(username)
+        @users.values.select { |user| user.username == username }[0]
+      end
+
       ##############
       #  Sessions  #
       ##############
 
       def create_session(user_id)
-        session_id = (@session_id_count += 1)
+        session_id = SecureRandom.uuid
         @sessions[session_id] = user_id
         return session_id
       end

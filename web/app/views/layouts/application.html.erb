@@ -19,8 +19,14 @@
             <ul class="nav pull-right">
               <li><%= link_to "Home",    root_path %></li>
               <li><%= link_to "About",   about_path %></li>
-              <li><%= link_to "Sign In", signin_path %></li>
-              <li><%= link_to "Sign Up", signup_path %></li>
+              <% if signed_in? == false %>
+                <li><%= link_to "Sign In", signin_path %></li>
+              <% else %>
+                <li><%= link_to "Sign Out", signout_path %></li>
+              <% end %>
+              <% if signed_in? == false %>
+                <li><%= link_to "Sign Up", signup_path %></li>
+              <% end %>
             </ul>
           </nav>
         </div>

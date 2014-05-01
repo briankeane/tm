@@ -15,7 +15,7 @@ module TM
       it 'creates a User' do
         user = db.create_user ({ username: "Bob", password: "password" })
         expect(user.username).to eq("Bob")
-        expect(user.password).to eq("password")
+        expect(user.password_digest).to eq("password")
         expect(user.id).to_not be_nil
       end
 
@@ -30,6 +30,12 @@ module TM
         expect(db.delete_user(999999)).to eq(false)
         expect(result).to eq(true)
         expect(db.get_user(user.id)).to be_nil
+      end
+
+      it 'gets a user by username' do
+        user = db.create_user ({ username: "Bob", password: "password" })
+        expect(db.get_user_by_username("Bob").id).to eq(user.id)
+        expect(db.get_user_by_username("Billy")).to be_nil
       end
     end
 
